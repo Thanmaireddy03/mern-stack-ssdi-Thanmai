@@ -1,11 +1,15 @@
-import { MongoClient } from "mongodb";
+import { MongoClient, ServerApiVersion } from "mongodb";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const URI = process.env.ATLAS_URI || "";
 const client = new MongoClient(URI, {
-  tls: true, // Ensure TLS is enabled
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
 });
 
 let db;
