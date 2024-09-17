@@ -1,19 +1,15 @@
 import express from "express";
-
-// This will help us connect to the database
-import { getDB } from "../db/connection.js";
-
-// This help convert the id from string to ObjectId for the _id.
+import { connectDB, getDB } from "../db/connection.js";
 import { ObjectId } from "mongodb";
 
-// router is an instance of the express router.
-// We use it to define our routes.
-// The router will be added as a middleware and will take control of requests starting with path /record.
 const router = express.Router();
+
+// Connect to the database
+await connectDB();
+const db = getDB();
 
 // This section will help you get a list of all the records.
 router.get("/", async (req, res) => {
-  const db = getDB();
   let collection = await db.collection("records");
   let results = await collection.find({}).toArray();
   res.send(results).status(200);
@@ -21,7 +17,6 @@ router.get("/", async (req, res) => {
 
 // This section will help you get a single record by id
 router.get("/:id", async (req, res) => {
-  const db = getDB();
   let collection = await db.collection("records");
   let query = { _id: new ObjectId(req.params.id) };
   let result = await collection.findOne(query);
@@ -33,7 +28,6 @@ router.get("/:id", async (req, res) => {
 // This section will help you create a new record.
 router.post("/", async (req, res) => {
   try {
-    const db = getDB();
     let newDocument = {
       name: req.body.name,
       position: req.body.position,
@@ -51,7 +45,6 @@ router.post("/", async (req, res) => {
 // This section will help you update a record by id.
 router.patch("/:id", async (req, res) => {
   try {
-    const db = getDB();
     const query = { _id: new ObjectId(req.params.id) };
     const updates = {
       $set: {
@@ -73,7 +66,6 @@ router.patch("/:id", async (req, res) => {
 // This section will help you delete a record
 router.delete("/:id", async (req, res) => {
   try {
-    const db = getDB();
     const query = { _id: new ObjectId(req.params.id) };
 
     const collection = db.collection("records");
